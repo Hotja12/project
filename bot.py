@@ -9,7 +9,8 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery
-from commands import FILM_CREATE_COMMAND, FILM_DELETE_COMMAND, FILM_EDIT_COMMAND, FILM_FILTER_COMMAND, FILM_SEARCH_COMMAND
+from commands import FILM_CREATE_COMMAND, FILM_DELETE_COMMAND, FILM_EDIT_COMMAND, FILM_FILTER_COMMAND, FILM_SEARCH_COMMAND, FILMS_COMMAND 
+
 from data import get_films, add_film
 from keyboards import films_keyboard_markup, FilmCallback
 
@@ -22,6 +23,7 @@ from commands import (
     BOT_COMMANDS,
     FILMS_COMMAND,
     START_COMMAND,
+   
 
 )
 
@@ -332,7 +334,12 @@ async def filter_movies(message: Message, state: FSMContext):
     await message.reply("Введіть жанр для фільтрації:")
     await state.set_state(MovieStates.filter_criteria)
     
-    
+@dp.message(Command("best_film"))
+@async_log_function_call
+async def best_film(message: Message, state: FSMContext):
+    films = get_films()
+    film = list(filter(lambda film: film['rating'], films))[0]
+    await message.reply(str(film))
 
 @dp.message(MovieStates.filter_criteria)
 @async_log_function_call
